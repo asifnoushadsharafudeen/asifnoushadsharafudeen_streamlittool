@@ -21,8 +21,8 @@ The app is organized into **multiple tabs**, each serving a specific function:
 - Remove **duplicate rows**: Ensures each record is unique for accurate analysis. (drop_duplicates() in Pandas / unique() in Polars)
 - Change column data types: Converts columns to appropriate types (int, float, string) for proper computations. (astype() in Pandas / cast() in Polars)
 - Normalize data: Rescales numerical features for consistent range.
-	- Min-Max Scaling: (MinMaxScaler() from scikit-learn)
-	- Z-Score: (StandardScaler() from scikit-learn)
+	- Min-Max Scaling: Rescales features to a fixed range (usually 0–1) while preserving relative relationships. (MinMaxScaler() from scikit-learn)
+	- Z-Score: Standardizes features by removing the mean and scaling to unit variance, useful for normally distributed data. (StandardScaler() from scikit-learn)
 - Apply row-based filtering: Keep rows based on conditions (e.g., value thresholds). (query() in Pandas / filter() in Polars)
 
 ### **3️⃣ Data Profiling**
