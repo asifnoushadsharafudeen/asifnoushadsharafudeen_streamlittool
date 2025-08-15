@@ -123,13 +123,19 @@ In this app, for data manipulation:
 
 ## 📥 Installation
 
-```bash
 # Clone the repository
-git clone https://github.com/<your-username>/<repo-name>.git
-cd <repo-name>
+git clone https://github.com/asifnoushadsharafudeen/asifnoushadsharafudeen_streamlittool.git
+cd asifnoushadsharafudeen_streamlittool
+
+# (Optional) create and activate a virtual environment
+python -m venv venv
+# Windows
+venv\Scripts\activate
+# macOS / Linux
+source venv/bin/activate
 
 # Install dependencies
 pip install -r requirements.txt
 
-# Run the app
+# Run the Streamlit app
 streamlit run app.py
