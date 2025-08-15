@@ -120,3 +120,13 @@ In this app, for data manipulation:
 | **ydata-profiling** | Automated profiling |
 
 ---
+
+## References:
+
+- Machine Learning Model: Random Forest --> Learning links: https://www.blastanalytics.com/blog/comparing-propensity-modeling-techniques-to-predict-customer-behavior
+
+- Learning Random Forest Functions, Entropy, Gini Impurity using Microsoft Copilot
+
+- Machine Learning Dataset: https://www.openml.org/search?type=data&sort=runs&id=11&status=active
+
+- Used CHATGPT for learning about the user-interface of streamlit and programming guide
