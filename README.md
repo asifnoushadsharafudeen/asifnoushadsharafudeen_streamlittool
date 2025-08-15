@@ -120,22 +120,3 @@ In this app, for data manipulation:
 | **ydata-profiling** | Automated profiling |
 
 ---
-
-## 📥 Installation
-
-# Clone the repository
-git clone https://github.com/asifnoushadsharafudeen/asifnoushadsharafudeen_streamlittool.git
-cd asifnoushadsharafudeen_streamlittool
-
-# (Optional) create and activate a virtual environment
-python -m venv venv
-# Windows
-venv\Scripts\activate
-# macOS / Linux
-source venv/bin/activate
-
-# Install dependencies
-pip install -r requirements.txt
-
-# Run the Streamlit app
-streamlit run app.py
