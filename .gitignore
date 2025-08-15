@@ -1,0 +1,18 @@
+# Streamlit cache & logs
+.streamlit/
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# OS junk files
+*.DS_Store
+
+# Environment variables
+.env
+.env.*
+
+# Jupyter checkpoints
+.ipynb_checkpoints/
