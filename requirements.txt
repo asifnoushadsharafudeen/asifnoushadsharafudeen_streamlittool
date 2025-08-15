@@ -1,0 +1,9 @@
+streamlit>=1.32.0
+pandas>=2.2.0
+polars>=0.20.0
+ydata-profiling>=4.6.0
+scikit-learn>=1.4.0
+openpyxl>=3.1.2      # Excel file support for Pandas
+xlrd>=2.0.1          # Legacy Excel support
+matplotlib>=3.8.0    # Needed by ydata-profiling
+numpy>=1.26.0
