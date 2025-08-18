@@ -111,7 +111,10 @@ with tab2:
     #Checks if a file is uploaded and df_cleaned is in session. Else asks to upload a file.
     if "df_cleaned" in st.session_state:
         df = st.session_state["df_cleaned"]
+        
+        st.info("You can preview upto 100 rows and understand the datatypes of all the columns in the dataframe.")
         #st.slider returns an int file and is saved to num_rows
+        st.markdown("\n")
         num_rows = st.slider("Number of rows to preview", min_value=5, max_value=100, value=5)
         st.markdown("--- \n")
         #st.multiselect() returns a python list and is saved to col_to_show
@@ -147,7 +150,9 @@ with tab3:
     else:
         # Always use the latest cleaned data
         df = st.session_state["df_cleaned"]
-
+        
+        st.info("You can drop NaNs, remove duplicates, type cast, normalise and filter your data here.")
+        st.markdown("\n")
         operation = st.selectbox(
             "Select Cleaning Operation",
             ["Select Cleaning Operation", "Drop NaNs", "Remove Duplicates", "Type Conversion", "Normalisation", "Filtering"]
@@ -446,7 +451,7 @@ with tab3:
 # Data Profiling Tab
 ############################
 from ydata_profiling import ProfileReport
-import streamlit.components.v1 as components
+import streamlit.components.v1 as components #lets embed raw HTML into streamlit code
 
 with tab4:
     st.header("Data Profiling")
@@ -462,15 +467,17 @@ with tab4:
         else:
             df_to_profile = df
 
-        st.write("Generate a report with 1000 sample rows.")
+        st.write("Generate a report with 1000 random sample rows.")
+        st.info("Note: Interactions, Duplicates, Text Profiling and certain correlation calculations are disabled to boost profiling speed.")
         
         # Checkbox for full dataset or sample
         full_profile = st.checkbox("Toggle to generate report using entire dataset (Slower...)", value=False)
         
         # Generate button
         st.markdown("--- \n \n")
+        
         if st.button("Generate Profile"):
-            # Handle sampling if not full profile
+            # If full dataset is not requested and the profile contains > 1000 --> Then, sample 1000 rows at random 
             if not full_profile and len(df_to_profile) > 1000:
                 df_sample = df_to_profile.sample(1000, random_state=42)
                 st.info("Running profile on a random sample of 1000 rows.")
@@ -480,7 +487,23 @@ with tab4:
             # Create profile
             with st.spinner("Generating profiling report..."):
                 try:
-                    profile = ProfileReport(df_sample, title="Data Profiling Report", explorative=True)
+                    #explorative = True --> Generates a detailed report
+                    #Removed 'interactions', 'duplicates', text profiling, certain correlation calculations to increase speed
+                    profile = ProfileReport(df_sample, 
+                                            title="Data Profiling Report", 
+                                            explorative=True, 
+                                            correlations={
+                                                "pearson": {"calculate": True},
+                                                "spearman": {"calculate": True},
+                                                "kendall": {"calculate": False},  
+                                                "phi_k": {"calculate": False},    
+                                                "cramers": {"calculate": False} },
+                                            interactions={"continuous": False},
+                                            duplicates={"head": 0},
+                                            vars={"cat": {"length": False}} 
+                                            )
+                    
+                    #Generated profile is converted to html string
                     profile_html = profile.to_html()
                     components.html(profile_html, height=1000, scrolling=True)
                 except Exception as e:
@@ -494,6 +517,11 @@ with tab5:
     st.header("Cleaned File Exporter:")
     if "df_cleaned" in st.session_state:
         df = st.session_state["df_cleaned"]
+        
+        #Converts polars to pandas before exporting to CSV --> then does utf-8 encoding
+        #index = False --> avoids polars/pandas index column to make the csv clean
+        #mime = "text/csv" tells the file type to the browser
+        st.info("Please download the cleaned CSV file here.")
         st.download_button(
             "Download CSV",
             data=(df.to_pandas().to_csv(index=False).encode("utf-8")
@@ -504,6 +532,7 @@ with tab5:
         )
         st.markdown("--- \n")
 
+#####Summary
         st.subheader("Summary of cleaned data:")
         st.write(f"**Number of rows:** {df.shape[0]}")
         st.write(f"**Number of columns:** {df.shape[1]}")

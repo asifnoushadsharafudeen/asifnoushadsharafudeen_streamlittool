@@ -9,12 +9,14 @@ We can quickly upload, explore, clean, and run machine learning predictions from
 
 The app is organized into **multiple tabs**, each serving a specific function:
 
-### **1️⃣ Data Preview**
+### **1️⃣ Data Loading & Preview**
 - Upload **CSV** or **Excel** files.
-- View the first few rows of the dataset. (head() in Pandas/Polars)
-- Automatic data type detection. (dtypes in Pandas/Polars)
-- Summary statistics & column insights. (describe() in Pandas/Polars)
+- Load CSV files via lazy loading feature of pandas and display 5 rows as preview.
+- Load entire dataset for further cleaning process.
 - We use Polars by default for data loading and fall back to Pandas if needed.
+- View the first 100 rows of the dataset. (head() in Pandas/Polars)
+- Automatic data type detection. (dtypes in Pandas/Polars)
+
 
 ### **2️⃣ Data Cleaning**
 - Drop **NaN values**: Removes rows with missing data to avoid errors during analysis. (dropna() in Pandas / drop_nulls() in Polars)
@@ -36,15 +38,15 @@ The app is organized into **multiple tabs**, each serving a specific function:
 - Apply row-based filtering: Keep rows based on conditions (e.g., value thresholds). (query() in Pandas / filter() in Polars)
 
 ### **3️⃣ Data Profiling**
-- Generate comprehensive or sample-based data profiles.
-- Powered by **YData Profiling**. Provides provision for data profiling using limited rows to improve speed.
-- View correlations, missing values, distributions, and warnings.
+- Generate comprehensive or sample-based data profiles and integrate it as an html string into streamlit.
+- By default loads 1000 random sampled rows to generate profile unless user demands a full profile.
+- Powered by **YData Profiling**. (Pandas Profiling).
+- View correlations, missing values, distributions, and warnings. Disabled interactions, text profiling, duplicates and certain correlation calculations to improve speed.
 - Functions used: ProfileReport() from ydata_profiling
 
 ### **4️⃣ Download & Summary**
 - Download the processed dataset as **CSV**. (to_csv() in Pandas / write_csv() in Polars)
-- See summary statistics of the cleaned dataset:
-  - Column types
+- See summary statistics of the cleaned dataset: Rows, Columns, Datatypes
 
 ### **5️⃣ ML Prediction Module**
 - Choose target and feature columns. The model is presently tested to use 'categorical' target class.
