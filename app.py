@@ -93,12 +93,13 @@ with tab1:
                 st.info("File uploaded, but full dataset not loaded yet. Click 'Load Full Dataset for Cleaning' to proceed.")
 
         # Optional: a manual reset button --> here we can manually overwrite df_cleaned to df_original
-        st.markdown("\n --- \n")  # Thin horizontal line
-        st.error("Drop all applied cleaning operations and reload the original file here.")
-        if st.button("Reset Data") and "df_original" in st.session_state:
-            base = st.session_state["df_original"]
-            st.session_state["df_cleaned"] = base.clone() if isinstance(base, pl.DataFrame) else base.copy()
-            st.success("Cleaned data reset to original.")
+        #if "df_original" in st.session_state:
+            #st.markdown("\n --- \n")  # Thin horizontal line
+            #st.error("Drop all applied cleaning operations and reload the original file here.")
+            #if st.button("Reset Data") and "df_original" in st.session_state:
+                #base = st.session_state["df_original"]
+                #st.session_state["df_cleaned"] = base.clone() if isinstance(base, pl.DataFrame) else base.copy()
+                #st.success("Cleaned data reset to original.")
     else:
         st.info("Please upload a CSV file to proceed.")
 
