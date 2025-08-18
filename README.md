@@ -19,10 +19,20 @@ The app is organized into **multiple tabs**, each serving a specific function:
 ### **2️⃣ Data Cleaning**
 - Drop **NaN values**: Removes rows with missing data to avoid errors during analysis. (dropna() in Pandas / drop_nulls() in Polars)
 - Remove **duplicate rows**: Ensures each record is unique for accurate analysis. (drop_duplicates() in Pandas / unique() in Polars)
-- Change column data types: Converts columns to appropriate types (int, float, string) for proper computations. (astype() in Pandas / cast() in Polars)
-- Normalize data: Rescales numerical features for consistent range.
-	- Min-Max Scaling: Rescales features to a fixed range (usually 0–1) while preserving relative relationships. (MinMaxScaler() from scikit-learn)
-	- Z-Score: Standardizes features by removing the mean and scaling to unit variance, useful for normally distributed data. (StandardScaler() from scikit-learn)
+- **Type Conversion**: Converts columns to appropriate types (int, float, string) for proper computations. (astype() in Pandas / cast() in Polars)
+- **Normalize data**: Rescales numerical features for consistent range. It allows machine learning models to converge faster and avoid bias towards large datasets. 
+	- Currently, only numerical values are allowed to be normalised in the app. Text normalisation is not considered.
+
+		- **Min-Max Scaling** : Rescales features to a fixed range. (MinMaxScaler() from scikit-learn)
+		- Equation ==> Normalised Value = (Actual Value - Minimum Value)/(Maximum Value - Minimum Value)
+		- Here, the values lie between 0 and 1. 
+
+	- **Z-Score** : Standardizes features by removing the mean and scaling to unit variance, useful for normally distributed data. (StandardScaler() from scikit-learn)
+		- Equation ==> Normalised Value = (Actual Value - Mean)/Standard Deviation
+		- Here, data centers around mean = 0 and standard deviation = 1.
+		- Here, mean of the original data is made 0. Thus values below mean is negative and values above mean is positive.
+		- Also, by dividing with standard deviation, we made the standard deviation of the normalised data as 1.
+
 - Apply row-based filtering: Keep rows based on conditions (e.g., value thresholds). (query() in Pandas / filter() in Polars)
 
 ### **3️⃣ Data Profiling**
@@ -64,6 +74,11 @@ This app supports **both Pandas and Polars** for data handling.
 - Handles **large file sizes** efficiently.
 - Offers **significant speed improvements** for reading, filtering, and aggregations.
 - Uses **lazy evaluation** to optimize query execution.
+
+**When does it shift to Pandas?**
+- Polars only support UTF-8 encoding. In cased of other encodings, it shifts to Pandas.
+- Inconsistent data cannot be inferred by Polars using 'infer_schema_length'. Thus, shifts to Pandas.
+
 
 In this app, for file loading:
 - **Default:** Polars (for speed & performance).
