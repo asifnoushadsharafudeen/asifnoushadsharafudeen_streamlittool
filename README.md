@@ -1,6 +1,7 @@
 # 📊 Data Refiner App
 
-An interactive **data cleaning, profiling, and prediction platform** built with **Streamlit**.  We can quickly upload, explore, clean, and run machine learning predictions from a browser-based interface.
+An interactive **data cleaning, profiling, and prediction platform** built with **Streamlit**.  
+We can quickly upload, explore, clean, and run machine learning predictions from a browser-based interface.
 
 ---
 
@@ -16,7 +17,9 @@ The app is organized into **multiple tabs**, each serving a specific function:
 
 ---
 
-![Data Loading Screenshot](images/data_loading.png)
+<p align="center">
+  <img src="images/data_loading.png" alt="Data Loading Screenshot" width="600"/>
+</p>
 
 ---
 
@@ -28,10 +31,11 @@ The app is organized into **multiple tabs**, each serving a specific function:
 
 ---
 
-![Data Preview Screenshot](images/data_preview.png)
+<p align="center">
+  <img src="images/data_preview.png" alt="Data Preview Screenshot" width="600"/>
+</p>
 
 ---
-
 
 ### **3️⃣ Data Cleaning**
 - Drop **NaN values**: Removes rows with missing data to avoid errors during analysis. (dropna() in Pandas / drop_nulls() in Polars)
@@ -40,25 +44,25 @@ The app is organized into **multiple tabs**, each serving a specific function:
 - **Normalize data**: Rescales numerical features for consistent range. It allows machine learning models to converge faster and avoid bias towards large datasets. 
 	- Currently, only numerical values are allowed to be normalised in the app. Text normalisation is not considered.
 
-		- **Min-Max Scaling** : Rescales features to a fixed range. (MinMaxScaler() from scikit-learn)
-		- Equation ==> Normalised Value = (Actual Value - Minimum Value)/(Maximum Value - Minimum Value)
-		- Here, the values lie between 0 and 1. 
+		- **Min-Max Scaling** : Rescales features to a fixed range. (MinMaxScaler() from scikit-learn)  
+		- Equation ==> Normalised Value = (Actual Value - Minimum Value)/(Maximum Value - Minimum Value)  
+		- Here, the values lie between 0 and 1.  
 
-	- **Z-Score** : Standardizes features by removing the mean and scaling to unit variance, useful for normally distributed data. (StandardScaler() from scikit-learn)
-		- Equation ==> Normalised Value = (Actual Value - Mean)/Standard Deviation
-		- Here, data centers around mean = 0 and standard deviation = 1.
-		- Here, mean of the original data is made 0. Thus values below mean is negative and values above mean is positive.
-		- Also, by dividing with standard deviation, we made the standard deviation of the normalised data as 1.
+	- **Z-Score** : Standardizes features by removing the mean and scaling to unit variance, useful for normally distributed data. (StandardScaler() from scikit-learn)  
+		- Equation ==> Normalised Value = (Actual Value - Mean)/Standard Deviation  
+		- Here, data centers around mean = 0 and standard deviation = 1.  
+		- Values below mean are negative; values above mean are positive.  
+		- Dividing by standard deviation makes std dev = 1.  
 
 - Apply row-based filtering: Keep rows based on conditions (e.g., value thresholds). (query() in Pandas / filter() in Polars)
 
 ---
 
-![Data Cleaning Screenshot](images/data_cleaning.png)
-
+<p align="center">
+  <img src="images/data_cleaning.png" alt="Data Cleaning Screenshot" width="600"/>
+</p>
 
 ---
-
 
 ### **4️⃣ Data Profiling**
 - Generate comprehensive or sample-based data profiles and integrate it as an html string into streamlit.
@@ -69,7 +73,9 @@ The app is organized into **multiple tabs**, each serving a specific function:
 
 ---
 
-![Data Profiling Screenshot](images/data_profiling.png)
+<p align="center">
+  <img src="images/data_profiling.png" alt="Data Profiling Screenshot" width="600"/>
+</p>
 
 ---
 
@@ -79,10 +85,11 @@ The app is organized into **multiple tabs**, each serving a specific function:
 
 --- 
 
-![Data Download Screenshot](images/data_download_summary.png)
+<p align="center">
+  <img src="images/data_download_summary.png" alt="Data Download Screenshot" width="600"/>
+</p>
 
 ---
-
 
 ### **6️⃣ ML Prediction Module**
 - Choose target and feature columns. The model is presently tested to use 'categorical' target class.
@@ -93,23 +100,25 @@ The app is organized into **multiple tabs**, each serving a specific function:
 - Tested for classification datasets. Regression model can be tested and implemented as 'Rain Forest' is capable of dealing with numerical classes as well. (extendable)
 - Other Functions used: fit(), predict(), score()
 
-
 ---
-
 
 ## 📊 Machine Learning Model: Random Forest
 
 - Random Forests are **ensemble models**, which uses individual learners and then combines their learning to a single decision. It is often preferred as it is robust and adaptable. But due to cost intensive (High run time for larger data sets) and Black Box nature, it's often not advocated. 
 
-- Black Box: Random Forests does not allow control on what the model does beyond a few hyper-parameters (Eg: Number of trees, depth etc). Thus it's very difficult to say why certain trees performed better while given higher weights.
+- **Black Box:** Random Forests does not allow control on what the model does beyond a few hyper-parameters (Eg: Number of trees, depth etc). Thus it's very difficult to say why certain trees performed better while given higher weights.
 
-![Random Forest](images/random_forest.png)
+<p align="center">
+  <img src="images/random_forest.png" alt="Random Forest" width="600"/>
+</p>
 
 - Random forest builds multiple **decision trees** and merges them together to get accurate prediction. A large number of uncorrelated trees operate together to outperform individual models. Thus a forest is built with an ensemble of decision trees, usually trained with the "bagging method"
 
-- The data used for training and testing in saved as 'balance_scale.csv'. Below is the data sample which depicts left-weight, left-distance, right-weight, right-distance.
+- The data used for training and testing is saved as `balance_scale.csv`. Below is the data sample:
 
-![Random Forest Data Sample](images/datasample_randomforest.png)
+<p align="center">
+  <img src="images/datasample_randomforest.png" alt="Random Forest Data Sample" width="600"/>
+</p>
 
 - During training, the dataset is split into training and test sets (typically 70–80% for training, 20–30% for testing). The Random Forest model learns patterns by building multiple decision trees on random subsets of features and samples, which helps reduce overfitting and improves generalization.
 
@@ -119,13 +128,13 @@ The app is organized into **multiple tabs**, each serving a specific function:
 
 - Once trained, the model can predict the tipping direction for new scale configurations.
 
-
 ---
 
-![ML Prediction Screenshot](images/ml_prediction.png)
+<p align="center">
+  <img src="images/ml_prediction.png" alt="ML Prediction Screenshot" width="600"/>
+</p>
 
 ---
-
 
 ## ⚙️ Stack Choices: Pandas vs Polars
 
@@ -145,79 +154,24 @@ This app supports **both Pandas and Polars** for data handling.
 - Uses **lazy evaluation** to optimize query execution.
 
 **When does it shift to Pandas?**
-- Polars only support UTF-8 encoding. In cased of other encodings, it shifts to Pandas.
+- Polars only supports UTF-8 encoding. In case of other encodings, it shifts to Pandas.
 - Inconsistent data cannot be inferred by Polars using 'infer_schema_length'. Thus, shifts to Pandas.
 
-
-In this app, for file loading:
-- **Default:** Polars (for speed & performance).
-- **Optional:** Switch to Pandas when needed.
-
-In this app, for data manipulation:
-- **Default:** Pandas (for simplicity & compatibility).
-- **Optional:** Switch to Polars for large datasets (e.g., >50MB) for faster performance.
-
+**In this app:**
+- **File loading:** Default = Polars; fallback = Pandas.  
+- **Data manipulation:** Default = Pandas; optional = Polars for large datasets (>50MB).
 
 ---
-
 
 ## ⚙️ Tips to handle large files (Optimizations):
 
 - **Already Implemented:**
-
-	- Polars for Data Loading: Default data loader is Polars, which is faster and more memory-efficient than Pandas for large datasets.
-
-	- Fallback to Pandas: If Polars cannot read a file (e.g., complex Excel sheets), Pandas is used as a fallback.
-
-	- Lazy Loading for Display: Initially load and display only a limited number of rows (e.g., first 5).
-
-	- Sample-Based Profiling: For very large datasets, only a subset of rows is used for profiling to improve speed and reduce memory usage.
-
-	- Optimized Profiling: Heavy profiling computations (interactions, missing values, text profiling, certain correlations disabled) are now performed selectively.
-	
+	- Polars for Data Loading  
+	- Fallback to Pandas  
+	- Lazy Loading for Display  
+	- Sample-Based Profiling  
+	- Optimized Profiling  
 
 - **Possible Additions:**
-	- Caching: Cache intermediate results (e.g., profiling summaries, model training subsets) to avoid redundant re-computation.	
-
-	- Chunked Processing: Load data in chunks to handle extremely large files without memory issues.
-
-	- Vectorized Operations: Use fully vectorized operations to speed up transformations and aggregations.
-
-
----
-
-
-## 🛠️ Tech Stack
-
-| Technology        | Purpose |
-|-------------------|---------|
-| **Python 3.10+**  | Core programming |
-| **Streamlit**     | Interactive web UI |
-| **Pandas / Polars** | Data handling |
-| **scikit-learn**  | Machine Learning |
-| **ydata-profiling** | Automated profiling |
-
-
----
-
-
-## References:
-
-- Machine Learning Model: Random Forest --> Learning links: 
-		
-	- https://www.blastanalytics.com/blog/comparing-propensity-modeling-techniques-to-predict-customer-behavior
-	- https://swethadhanasekar.medium.com/random-forest-classifier-a-beginners-guide-c0b41713020
-
-- Learning Random Forest Functions, Entropy, Gini Impurity using Microsoft Copilot
-
-- Machine Learning Dataset: https://www.openml.org/search?type=data&sort=runs&id=11&status=active
-
-- Used CHATGPT for learning about the user-interface of streamlit and programming guide
-
-
----
-
-
-##App Hosted (URL):
-
-App hosted live in https://asifnoushad-datarefinerapptool.streamlit.app/
+	- Caching intermediate results  
+	- Chunked Pro
