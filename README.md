@@ -177,47 +177,6 @@ In this app, for data manipulation:
 
 ---
 
-## 🖼️ Screenshots
-
----
-
-## Data Loading
-
-![Data Loading Screenshot](images/data_loading.png)
-
----
-
-## Data Preview
-
-![Data Preview Screenshot](images/data_preview.png)
-
----
-
-## Data Cleaning
-
-![Data Cleaning Screenshot](images/data_cleaning.png)
-
----
-
-## Data Profiling
-
-![Data Profiling Screenshot](images/data_profiling.png)
-
----
-
-## Data Download & Summary
-
-![Data Download Screenshot](images/data_download_summary.png)
-
----
-
-## ML Prediction
-
-![ML Prediction Screenshot](images/ml_prediction.png)
-
-
----
-
 ## 🛠️ Tech Stack
 
 | Technology        | Purpose |
