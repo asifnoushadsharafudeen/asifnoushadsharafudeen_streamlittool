@@ -631,11 +631,14 @@ with tab6:
                     y = y.loc[keep_mask]
 
                     # Split
+                    #stratify parameter ensures that the class distribution of the target (y) is preserved in both train and test dataset
+                    #if dataset has 70% class A and 30% class B --> train and test data will have class A,B in same proportion
+                    #In balance dataset --> stratify is irrelevant as there is only one class
                     X_train, X_test, y_train, y_test = train_test_split(
                         X, y, test_size=test_size, random_state=int(random_state), stratify=y if y.nunique() > 1 else None
                     )
 
-                    # Model
+                    # Random Forest Model: Assigning hyper parameters
                     clf = RandomForestClassifier(
                         n_estimators=int(n_estimators),
                         max_depth=None if max_depth == 0 else int(max_depth),
@@ -644,20 +647,20 @@ with tab6:
                     )
                     clf.fit(X_train, y_train)
 
-                    # Evaluate
+                    #Evaluating the trained model:
                     y_pred = clf.predict(X_test)
                     acc = accuracy_score(y_test, y_pred)
 
-                    st.success(f"Model trained! ✅ Accuracy: **{acc:.4f}**")
+                    st.success(f"Model trained! ✅ Accuracy (%):  **{acc*100:.2f}%**")
                 
 
-                    # Persist model + metadata for prediction
+                    # Persist model + metadata for prediction are being saved to session state
                     st.session_state["ml_model"] = clf
                     st.session_state["ml_features"] = feature_cols
                     st.session_state["ml_medians"] = medians  # for imputing in inference
                     st.session_state["ml_target_name"] = target_col
 
-    # ---- 5) Predict (only if model is trained) ----
+    #5) Predict (only if model is trained) ----
     if all(k in st.session_state for k in ["ml_model", "ml_features", "ml_medians"]):
         st.markdown("---")
         st.subheader("Make Predictions")
@@ -670,6 +673,8 @@ with tab6:
         # A) Batch prediction via file upload
         with st.expander("Batch Prediction: Upload CSV/Excel with the same feature columns", expanded=True):
             pred_file = st.file_uploader("Upload PREDICTION data (CSV/Excel, must contain feature columns)", type=["csv", "xlsx", "xls"], key="ml_pred_upl")
+            
+            #Loads file using pandas for predicting classes
             if pred_file is not None:
                 try:
                     if pred_file.name.lower().endswith(".csv"):
@@ -680,26 +685,38 @@ with tab6:
                     st.error(f"Failed to read prediction file: {e}")
                     pred_df = None
 
+                #Enters if condition is file is uploaded and it is not empty
                 if pred_df is not None and not pred_df.empty:
                     # Validate required columns
+                    #checks via list comprehension --> if the columns of uploaded batch file (pred_df.columns) match with columns in training file (feature_cols)
+                    #missing columns saved to missing_feats and error message is given
                     missing_feats = [c for c in feature_cols if c not in pred_df.columns]
+                    
                     if missing_feats:
                         st.error(f"Prediction file is missing required feature columns: {missing_feats}")
                     else:
+                        #Copies the data to Xp and fills missing values with median to avoid error
                         Xp = pred_df[feature_cols].copy()
                         Xp = Xp.fillna(medians)  # same imputation as training
 
                         try:
                             preds = clf.predict(Xp)
-                            proba = clf.predict_proba(Xp) if hasattr(clf, "predict_proba") else None
-
+                            
+                            #proba gives probability of getting classes
+                            #proba = clf.predict_proba(Xp) if hasattr(clf, "predict_proba") else None
+                            
+                            #saves the input batch file copy to 'out'
                             out = pred_df.copy()
+                            
+                            #adds a column (target_name)_pred to out --> target_name is saved in training part
                             out[target_name + "_pred"] = preds
-
+                            
+        
+                            #Shows preview of predictions --> 5 rows
                             st.write("Preview of predictions:")
-                            st.dataframe(out.head(20))
+                            st.dataframe(out.head(5))
 
-                            # Download button
+                            # Download button to download csv
                             csv_bytes = out.to_csv(index=False).encode("utf-8")
                             st.download_button(
                                 "Download Predictions CSV",
@@ -712,28 +729,38 @@ with tab6:
                             st.error(f"Prediction failed: {e}")
         
         st.markdown("--- \n")
+        
         # B) Manual single-row prediction
         with st.expander("Manual Prediction: Enter feature values", expanded=False):
             # Build inputs with medians as defaults
             manual_vals = {}
+            
+            #fixes 4 columns in a row until all feature_cols are displayed: prevents squished UI
             cols = st.columns(min(4, len(feature_cols)) or 1)
+            
+            #loops through the columns, to input a value (st.number_input) or display default (default_val, median)
             for i, col_name in enumerate(feature_cols):
                 default_val = float(medians.get(col_name, 0.0))
                 with cols[i % len(cols)]:
                     manual_vals[col_name] = st.number_input(col_name, value=default_val)
 
             if st.button("Predict Single Row"):
+                
+                #Input values and feature_cols saved inside a data frame; missing values replaced with median; then predicted
                 try:
                     row_df = pd.DataFrame([manual_vals], columns=feature_cols)
                     row_df = row_df.fillna(medians)
                     pred = clf.predict(row_df)[0]
                     st.success(f"Predicted class: **{pred}**")
+                    
+                    #Printing probabilities of each class: Can check efficiency of prediction
                     if hasattr(clf, "predict_proba"):
                         probs = clf.predict_proba(row_df)[0]
                         prob_map = {str(cls): float(p) for cls, p in zip(clf.classes_, probs)}
                         st.write("Class probabilities:", prob_map)
+                        
                 except Exception as e:
                     st.error(f"Manual prediction failed: {e}")
     else:
         with tab6:
-            st.info("Train a model above to enable predictions.")
+            st.info("Please train a model to enable predictions.")

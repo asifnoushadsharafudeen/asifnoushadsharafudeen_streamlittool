@@ -87,7 +87,8 @@ The app is organized into **multiple tabs**, each serving a specific function:
 ### **6️⃣ ML Prediction Module**
 - Choose target and feature columns. The model is presently tested to use 'categorical' target class.
 - Train a **Random Forest Classifier** on the uploaded dataset. (RandomForestClassifier() from scikit-learn)
-- Dataset demonstrated is that of a 'balance scale measurements' obtained from OpenML.
+- Dataset demonstrated is that of a 'balance scale measurements' obtained from OpenML. (filename: balance_scale_train.csv)
+- User can test batch data and download predictions csv. (filename: balance_scale_batch_test.csv)
 - User can enter custom inputs for instant predictions post training.
 - Tested for classification datasets. Regression model can be tested and implemented as 'Rain Forest' is capable of dealing with numerical classes as well. (extendable)
 - Other Functions used: fit(), predict(), score()
