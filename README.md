@@ -122,6 +122,14 @@ The app is organized into **multiple tabs**, each serving a specific function:
 
 - During training, the dataset is split into training and test sets (typically 70–80% for training, 20–30% for testing). The Random Forest model learns patterns by building multiple decision trees on random subsets of features and samples, which helps reduce overfitting and improves generalization.
 
+---
+
+<p align="center">
+  <img src="images/ml_training.png" alt="ML Prediction Screenshot" width="600"/>
+</p>
+
+---
+
 - Each tree predicts the class independently, and the final prediction is made via majority voting across all trees in the forest. This ensemble approach ensures that individual tree errors are minimized.
 
 - Hyperparameters such as the number of trees, maximum tree depth, and minimum samples per leaf are tuned to balance accuracy and computation time.
