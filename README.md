@@ -1,7 +1,6 @@
 # 📊 Data Refiner App
 
-An interactive **data cleaning, profiling, and prediction platform** built with **Streamlit**.  
-We can quickly upload, explore, clean, and run machine learning predictions from a browser-based interface.
+An interactive **data cleaning, profiling, and prediction platform** built with **Streamlit**.  We can quickly upload, explore, clean, and run machine learning predictions from a browser-based interface.
 
 ---
 
@@ -51,7 +50,9 @@ The app is organized into **multiple tabs**, each serving a specific function:
 
 ![Data Cleaning Screenshot](images/data_cleaning.png)
 
+
 ---
+
 
 ### **3️⃣ Data Profiling**
 - Generate comprehensive or sample-based data profiles and integrate it as an html string into streamlit.
@@ -86,39 +87,6 @@ The app is organized into **multiple tabs**, each serving a specific function:
 - Other Functions used: fit(), predict(), score()
 
 
-
----
-
-## ⚙️ Stack Choices: Pandas vs Polars
-
-This app supports **both Pandas and Polars** for data handling.
-
-| Feature                | **Pandas** | **Polars** |
-|------------------------|------------|------------|
-| Performance            | Great for small/medium datasets | Optimized for large datasets & parallel processing |
-| Memory Usage           | Higher     | Lower (more efficient memory allocation. It allows lazy loading.) |
-| Syntax Compatibility   | Widely used, mature ecosystem | Similar to Pandas, growing rapidly |
-| File Handling          | Adequate   | Faster CSV/Parquet read-write for big files |
-| Multithreading         | Limited    | Built-in parallel execution |
-
-**Why Polars?**
-- Handles **large file sizes** efficiently.
-- Offers **significant speed improvements** for reading, filtering, and aggregations.
-- Uses **lazy evaluation** to optimize query execution.
-
-**When does it shift to Pandas?**
-- Polars only support UTF-8 encoding. In cased of other encodings, it shifts to Pandas.
-- Inconsistent data cannot be inferred by Polars using 'infer_schema_length'. Thus, shifts to Pandas.
-
-
-In this app, for file loading:
-- **Default:** Polars (for speed & performance).
-- **Optional:** Switch to Pandas when needed.
-
-In this app, for data manipulation:
-- **Default:** Pandas (for simplicity & compatibility).
-- **Optional:** Switch to Polars for large datasets (e.g., >50MB) for faster performance.
-
 ---
 
 
@@ -152,6 +120,40 @@ In this app, for data manipulation:
 ---
 
 
+## ⚙️ Stack Choices: Pandas vs Polars
+
+This app supports **both Pandas and Polars** for data handling.
+
+| Feature                | **Pandas** | **Polars** |
+|------------------------|------------|------------|
+| Performance            | Great for small/medium datasets | Optimized for large datasets & parallel processing |
+| Memory Usage           | Higher     | Lower (more efficient memory allocation. It allows lazy loading.) |
+| Syntax Compatibility   | Widely used, mature ecosystem | Similar to Pandas, growing rapidly |
+| File Handling          | Adequate   | Faster CSV/Parquet read-write for big files |
+| Multithreading         | Limited    | Built-in parallel execution |
+
+**Why Polars?**
+- Handles **large file sizes** efficiently.
+- Offers **significant speed improvements** for reading, filtering, and aggregations.
+- Uses **lazy evaluation** to optimize query execution.
+
+**When does it shift to Pandas?**
+- Polars only support UTF-8 encoding. In cased of other encodings, it shifts to Pandas.
+- Inconsistent data cannot be inferred by Polars using 'infer_schema_length'. Thus, shifts to Pandas.
+
+
+In this app, for file loading:
+- **Default:** Polars (for speed & performance).
+- **Optional:** Switch to Pandas when needed.
+
+In this app, for data manipulation:
+- **Default:** Pandas (for simplicity & compatibility).
+- **Optional:** Switch to Polars for large datasets (e.g., >50MB) for faster performance.
+
+
+---
+
+
 ## ⚙️ Tips to handle large files (Optimizations):
 
 - **Already Implemented:**
@@ -168,7 +170,7 @@ In this app, for data manipulation:
 	
 
 - **Possible Additions:**
-	- Caching: Cache intermediate results (e.g., profiling summaries, model training subsets) to avoid redundant 			  re-computation.	
+	- Caching: Cache intermediate results (e.g., profiling summaries, model training subsets) to avoid redundant re-computation.	
 
 	- Chunked Processing: Load data in chunks to handle extremely large files without memory issues.
 
@@ -176,6 +178,7 @@ In this app, for data manipulation:
 
 
 ---
+
 
 ## 🛠️ Tech Stack
 
@@ -187,7 +190,9 @@ In this app, for data manipulation:
 | **scikit-learn**  | Machine Learning |
 | **ydata-profiling** | Automated profiling |
 
+
 ---
+
 
 ## References:
 
@@ -202,7 +207,9 @@ In this app, for data manipulation:
 
 - Used CHATGPT for learning about the user-interface of streamlit and programming guide
 
+
 ---
+
 
 ##App Hosted (URL):
 
