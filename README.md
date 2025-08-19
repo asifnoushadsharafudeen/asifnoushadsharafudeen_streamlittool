@@ -8,17 +8,23 @@ An interactive **data cleaning, profiling, and prediction platform** built with 
 
 The app is organized into **multiple tabs**, each serving a specific function:
 
-### **1️⃣ Data Loading & Preview**
+### **1️⃣ Data Loading**
 - Upload **CSV** or **Excel** files.
 - Load CSV files via lazy loading feature of pandas and display 5 rows as preview.
 - Load entire dataset for further cleaning process.
 - We use Polars by default for data loading and fall back to Pandas if needed.
-- View the first 100 rows of the dataset. (head() in Pandas/Polars)
-- Automatic data type detection. (dtypes in Pandas/Polars)
 
 ---
 
 ![Data Loading Screenshot](images/data_loading.png)
+
+---
+
+### **2️⃣ Data Preview**
+- View the first 100 rows of the dataset. (head() in Pandas/Polars)
+- Provides quick snapshot of data structure.
+- Ensures correct loading before cleaning.
+- Automatically detect the datatypes of the columns selected in the dataset.
 
 ---
 
@@ -27,7 +33,7 @@ The app is organized into **multiple tabs**, each serving a specific function:
 ---
 
 
-### **2️⃣ Data Cleaning**
+### **3️⃣ Data Cleaning**
 - Drop **NaN values**: Removes rows with missing data to avoid errors during analysis. (dropna() in Pandas / drop_nulls() in Polars)
 - Remove **duplicate rows**: Ensures each record is unique for accurate analysis. (drop_duplicates() in Pandas / unique() in Polars)
 - **Type Conversion**: Converts columns to appropriate types (int, float, string) for proper computations. (astype() in Pandas / cast() in Polars)
@@ -54,7 +60,7 @@ The app is organized into **multiple tabs**, each serving a specific function:
 ---
 
 
-### **3️⃣ Data Profiling**
+### **4️⃣ Data Profiling**
 - Generate comprehensive or sample-based data profiles and integrate it as an html string into streamlit.
 - By default loads 1000 random sampled rows to generate profile unless user demands a full profile.
 - Powered by **YData Profiling**. (Pandas Profiling).
@@ -67,7 +73,7 @@ The app is organized into **multiple tabs**, each serving a specific function:
 
 ---
 
-### **4️⃣ Download & Summary**
+### **5️⃣ Download & Summary**
 - Download the processed dataset as **CSV**. (to_csv() in Pandas / write_csv() in Polars)
 - See summary statistics of the cleaned dataset: Rows, Columns, Datatypes
 
@@ -78,7 +84,7 @@ The app is organized into **multiple tabs**, each serving a specific function:
 ---
 
 
-### **5️⃣ ML Prediction Module**
+### **6️⃣ ML Prediction Module**
 - Choose target and feature columns. The model is presently tested to use 'categorical' target class.
 - Train a **Random Forest Classifier** on the uploaded dataset. (RandomForestClassifier() from scikit-learn)
 - Dataset demonstrated is that of a 'balance scale measurements' obtained from OpenML.
