@@ -559,46 +559,52 @@ from sklearn.metrics import accuracy_score, classification_report, confusion_mat
 
 with tab6:
     st.header("Random Forest Classifier Model")
-    st.caption("Upload training dataset --> Pick Target --> Auto-detect numeric features --> Train --> Predict.")
+    st.info("Upload training dataset --> Pick Target Class --> Auto-detect numeric features --> Train Model --> Predict Result")
 
     st.markdown("--- \n")
-    # ---- 1) Upload TRAINING dataset (CSV or Excel) ----
+    
+    #Upload TRAINING dataset (CSV or Excel) ----
     train_file = st.file_uploader("Upload TRAINING dataset (CSV or Excel)", type=["csv", "xlsx", "xls"], key="ml_train_upl")
 
+    #Loads .csv/.xlsx and stores in train_df. 
     if train_file is not None:
         # Read with pandas only (this module is independent from cleaning pipeline)
         try:
             if train_file.name.lower().endswith(".csv"):
                 train_df = pd.read_csv(train_file)
+                st.success("CSV file loaded succesfully.")
             else:
                 # Requires openpyxl for .xlsx
                 train_df = pd.read_excel(train_file)
+                st.success("Excel file loaded succesfully.")
         except Exception as e:
             st.error(f"Failed to read file: {e}")
             train_df = None
         
         st.markdown("--- \n")
+        #If file is loaded in train_df --> Preview 5 rows
         if train_df is not None and not train_df.empty:
-            st.write("Preview (first 10 rows):")
-            st.dataframe(train_df.head(10))
+            st.info("Training Data Preview (5 rows):")
+            st.dataframe(train_df.head(5))
 
             st.markdown("--- \n")
-            # ---- 2) Select target column ----
-            target_col = st.selectbox("Select TARGET column (classification)", options=train_df.columns)
+            #Select target column ----
+            target_col = st.selectbox("**Select Prediction Column (Y):**", options=train_df.columns)
 
-            # ---- 3) Auto-detect numeric FEATURES (exclude target) ----
+            #Auto-detect numeric FEATURES (exclude target) ----
             numeric_cols = train_df.select_dtypes(include=[np.number]).columns.tolist()
-            # Just in case target is numeric, exclude it
+            
+            # Just in case target (Y) is numeric, exclude it from feature_cols
             feature_cols = [c for c in numeric_cols if c != target_col]
 
             if not feature_cols:
-                st.warning("No numeric feature columns found (excluding target). Please upload a dataset with numeric features.")
+                st.warning("No numeric feature columns found. Please upload a dataset with numeric features.")
             else:
                 st.markdown("--- \n")
-                st.write("**Features auto-detected (numeric only):**")
+                st.write("**Numeric X-Variables (features) auto-detected:**")
                 st.code(", ".join(feature_cols) if feature_cols else "None")
 
-                # ---- Basic settings ----
+                # ---- Basic settings entered by user----
                 st.markdown("--- \n")
                 with st.expander("Training Settings", expanded=True):
                     test_size_percent = st.slider("Test size (%)", 1, 99, 20, 1)  # percentage in UI
@@ -607,18 +613,19 @@ with tab6:
                     max_depth = st.slider("Max depth (0 = None)", 0, 50, 0, 1)
                     random_state = st.number_input("Random state", value=42, step=1)
 
-                # ---- 4) Train model ----
+                #Train model ----
                 st.markdown("--- \n")
                 if st.button("Train Random Forest Classifier"):
-                    # Build X, y
+                    #Saves feature_cols & target_cols into X and Y. .copy() avoids duplication to original data.
                     X = train_df[feature_cols].copy()
                     y = train_df[target_col].copy()
 
-                    # Handle missing numerics with median imputation (simple & robust)
+                    # Handle missing numerics/NaNs with median to avoid crash for ever column (Median used as not influenced by outliers)
                     medians = X.median(numeric_only=True)
                     X = X.fillna(medians)
 
                     # If y has missing values, drop those rows
+                    #Creates a mask for non NaN values in Y. Then, rows of X, Y corresponding to the location masked is only taken.
                     keep_mask = ~y.isna()
                     X = X.loc[keep_mask]
                     y = y.loc[keep_mask]

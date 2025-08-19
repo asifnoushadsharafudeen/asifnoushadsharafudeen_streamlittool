@@ -17,6 +17,16 @@ The app is organized into **multiple tabs**, each serving a specific function:
 - View the first 100 rows of the dataset. (head() in Pandas/Polars)
 - Automatic data type detection. (dtypes in Pandas/Polars)
 
+---
+
+![Data Loading Screenshot](images/data_loading.png)
+
+---
+
+![Data Preview Screenshot](images/data_preview.png)
+
+---
+
 
 ### **2️⃣ Data Cleaning**
 - Drop **NaN values**: Removes rows with missing data to avoid errors during analysis. (dropna() in Pandas / drop_nulls() in Polars)
@@ -37,6 +47,12 @@ The app is organized into **multiple tabs**, each serving a specific function:
 
 - Apply row-based filtering: Keep rows based on conditions (e.g., value thresholds). (query() in Pandas / filter() in Polars)
 
+---
+
+![Data Cleaning Screenshot](images/data_cleaning.png)
+
+---
+
 ### **3️⃣ Data Profiling**
 - Generate comprehensive or sample-based data profiles and integrate it as an html string into streamlit.
 - By default loads 1000 random sampled rows to generate profile unless user demands a full profile.
@@ -44,9 +60,22 @@ The app is organized into **multiple tabs**, each serving a specific function:
 - View correlations, missing values, distributions, and warnings. Disabled interactions, text profiling, duplicates and certain correlation calculations to improve speed.
 - Functions used: ProfileReport() from ydata_profiling
 
+---
+
+![Data Profiling Screenshot](images/data_profiling.png)
+
+---
+
 ### **4️⃣ Download & Summary**
 - Download the processed dataset as **CSV**. (to_csv() in Pandas / write_csv() in Polars)
 - See summary statistics of the cleaned dataset: Rows, Columns, Datatypes
+
+--- 
+
+![Data Download Screenshot](images/data_download_summary.png)
+
+---
+
 
 ### **5️⃣ ML Prediction Module**
 - Choose target and feature columns. The model is presently tested to use 'categorical' target class.
@@ -118,18 +147,29 @@ In this app, for data manipulation:
 
 ---
 
+![ML Prediction Screenshot](images/ml_prediction.png)
 
-## ⚙️ Tips to handle large files
+---
+
+
+## ⚙️ Tips to handle large files (Optimizations):
 
 - **Already Implemented:**
 
 	- Polars for Data Loading: Default data loader is Polars, which is faster and more memory-efficient than Pandas for large datasets.
 
-	- Sample-Based Profiling: For very large datasets, only a subset of rows is used for profiling to improve speed and reduce memory usage.
-
 	- Fallback to Pandas: If Polars cannot read a file (e.g., complex Excel sheets), Pandas is used as a fallback.
 
+	- Lazy Loading for Display: Initially load and display only a limited number of rows (e.g., first 5).
+
+	- Sample-Based Profiling: For very large datasets, only a subset of rows is used for profiling to improve speed and reduce memory usage.
+
+	- Optimized Profiling: Heavy profiling computations (interactions, missing values, text profiling, certain correlations disabled) are now performed selectively.
+	
+
 - **Possible Additions:**
+	- Caching: Cache intermediate results (e.g., profiling summaries, model training subsets) to avoid redundant 			  re-computation.	
+
 	- Chunked Processing: Load data in chunks to handle extremely large files without memory issues.
 
 	- Vectorized Operations: Use fully vectorized operations to speed up transformations and aggregations.
