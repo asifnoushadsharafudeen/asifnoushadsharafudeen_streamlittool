@@ -3,8 +3,17 @@ from streamlit.runtime.caching import cache_data, cache_resource
 import pandas as pd
 import polars as pl
 
-st.title("Data Refiner App")
-st.write("#### (by Asif Noushad)")
+
+st.markdown("""
+# ✨ Data Refiner App  
+
+An **interactive platform** for *data loading*, *data cleaning*, *profiling*, and *prediction* — built with **Streamlit**.  
+
+<p style="text-align: right; color: gray;">— by Asif Noushad Sharafudeen </p>
+""", unsafe_allow_html=True)
+
+st.markdown("\n")
+
 
 # Tabs for better UI
 tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs([
