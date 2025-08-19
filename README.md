@@ -1,7 +1,6 @@
 # 📊 Data Refiner App
 
-An interactive **data cleaning, profiling, and prediction platform** built with **Streamlit**.  
-We can quickly upload, explore, clean, and run machine learning predictions from a browser-based interface.
+An interactive **data cleaning, profiling, and prediction platform** built with **Streamlit**.  We can quickly upload, explore, clean, and run machine learning predictions from a browser-based interface.
 
 ---
 
@@ -9,9 +8,7 @@ We can quickly upload, explore, clean, and run machine learning predictions from
 
 The app is organized into **multiple tabs**, each serving a specific function:
 
-<details>
-  <summary><b>1️⃣ Data Loading & Preview</b></summary>
-
+### **1️⃣ Data Loading & Preview**
 - Upload **CSV** or **Excel** files.
 - Load CSV files via lazy loading feature of pandas and display 5 rows as preview.
 - Load entire dataset for further cleaning process.
@@ -19,147 +16,171 @@ The app is organized into **multiple tabs**, each serving a specific function:
 - View the first 100 rows of the dataset. (head() in Pandas/Polars)
 - Automatic data type detection. (dtypes in Pandas/Polars)
 
+---
+
 ![Data Loading Screenshot](images/data_loading.png)
+
+---
 
 ![Data Preview Screenshot](images/data_preview.png)
 
-</details>
-
 ---
 
-<details>
-  <summary><b>2️⃣ Data Cleaning</b></summary>
 
-- Drop **NaN values**: Removes rows with missing data to avoid errors during analysis.
-- Remove **duplicate rows**.
-- **Type Conversion**: Converts columns to appropriate types.
-- **Normalize data**:
-  - **Min-Max Scaling**  
-    Equation: `(Value - Min)/(Max - Min)`
-  - **Z-Score Normalization**  
-    Equation: `(Value - Mean)/Std`
+### **2️⃣ Data Cleaning**
+- Drop **NaN values**: Removes rows with missing data to avoid errors during analysis. (dropna() in Pandas / drop_nulls() in Polars)
+- Remove **duplicate rows**: Ensures each record is unique for accurate analysis. (drop_duplicates() in Pandas / unique() in Polars)
+- **Type Conversion**: Converts columns to appropriate types (int, float, string) for proper computations. (astype() in Pandas / cast() in Polars)
+- **Normalize data**: Rescales numerical features for consistent range. It allows machine learning models to converge faster and avoid bias towards large datasets. 
+	- Currently, only numerical values are allowed to be normalised in the app. Text normalisation is not considered.
 
-- Apply row-based filtering (query/filter).
+		- **Min-Max Scaling** : Rescales features to a fixed range. (MinMaxScaler() from scikit-learn)
+		- Equation ==> Normalised Value = (Actual Value - Minimum Value)/(Maximum Value - Minimum Value)
+		- Here, the values lie between 0 and 1. 
+
+	- **Z-Score** : Standardizes features by removing the mean and scaling to unit variance, useful for normally distributed data. (StandardScaler() from scikit-learn)
+		- Equation ==> Normalised Value = (Actual Value - Mean)/Standard Deviation
+		- Here, data centers around mean = 0 and standard deviation = 1.
+		- Here, mean of the original data is made 0. Thus values below mean is negative and values above mean is positive.
+		- Also, by dividing with standard deviation, we made the standard deviation of the normalised data as 1.
+
+- Apply row-based filtering: Keep rows based on conditions (e.g., value thresholds). (query() in Pandas / filter() in Polars)
+
+---
 
 ![Data Cleaning Screenshot](images/data_cleaning.png)
 
-</details>
 
 ---
 
-<details>
-  <summary><b>3️⃣ Data Profiling</b></summary>
 
-- Generate comprehensive or sample-based data profiles.
-- By default loads 1000 random sampled rows.
-- Powered by **YData Profiling**.
-- Functions used: `ProfileReport()`.
+### **3️⃣ Data Profiling**
+- Generate comprehensive or sample-based data profiles and integrate it as an html string into streamlit.
+- By default loads 1000 random sampled rows to generate profile unless user demands a full profile.
+- Powered by **YData Profiling**. (Pandas Profiling).
+- View correlations, missing values, distributions, and warnings. Disabled interactions, text profiling, duplicates and certain correlation calculations to improve speed.
+- Functions used: ProfileReport() from ydata_profiling
+
+---
 
 ![Data Profiling Screenshot](images/data_profiling.png)
 
-</details>
-
 ---
 
-<details>
-  <summary><b>4️⃣ Download & Summary</b></summary>
+### **4️⃣ Download & Summary**
+- Download the processed dataset as **CSV**. (to_csv() in Pandas / write_csv() in Polars)
+- See summary statistics of the cleaned dataset: Rows, Columns, Datatypes
 
-- Download the processed dataset as **CSV**.  
-- See summary statistics of the cleaned dataset.
+--- 
 
 ![Data Download Screenshot](images/data_download_summary.png)
 
-</details>
+---
+
+
+### **5️⃣ ML Prediction Module**
+- Choose target and feature columns. The model is presently tested to use 'categorical' target class.
+- Train a **Random Forest Classifier** on the uploaded dataset. (RandomForestClassifier() from scikit-learn)
+- Dataset demonstrated is that of a 'balance scale measurements' obtained from OpenML.
+- User can enter custom inputs for instant predictions post training.
+- Tested for classification datasets. Regression model can be tested and implemented as 'Rain Forest' is capable of dealing with numerical classes as well. (extendable)
+- Other Functions used: fit(), predict(), score()
+
 
 ---
 
-<details>
-  <summary><b>5️⃣ ML Prediction Module</b></summary>
-
-- Choose target and feature columns.
-- Train a **Random Forest Classifier**.  
-- User can enter custom inputs for predictions.  
-- Dataset: Balance scale measurements from OpenML.  
-
-![ML Prediction Screenshot](images/ml_prediction.png)
-
-</details>
-
----
 
 ## 📊 Machine Learning Model: Random Forest
 
-<details>
-  <summary><b>Click to expand Random Forest details</b></summary>
+- Random Forests are **ensemble models**, which uses individual learners and then combines their learning to a single decision. It is often preferred as it is robust and adaptable. But due to cost intensive (High run time for larger data sets) and Black Box nature, it's often not advocated. 
 
-- Random Forests are **ensemble models**, combining multiple decision trees.  
-- Advantage: robust, reduces overfitting.  
-- Drawback: costly for large datasets & acts as a black box.
+- Black Box: Random Forests does not allow control on what the model does beyond a few hyper-parameters (Eg: Number of trees, depth etc). Thus it's very difficult to say why certain trees performed better while given higher weights.
 
 ![Random Forest](images/random_forest.png)
 
-- Training dataset: `balance_scale.csv` with left-weight, left-distance, right-weight, right-distance.
+- Random forest builds multiple **decision trees** and merges them together to get accurate prediction. A large number of uncorrelated trees operate together to outperform individual models. Thus a forest is built with an ensemble of decision trees, usually trained with the "bagging method"
+
+- The data used for training and testing in saved as 'balance_scale.csv'. Below is the data sample which depicts left-weight, left-distance, right-weight, right-distance.
 
 ![Random Forest Data Sample](images/datasample_randomforest.png)
 
-- Dataset split into train/test.  
-- Predictions based on majority voting across trees.  
-- Hyperparameters: n_estimators, max_depth, min_samples_leaf, etc.  
+- During training, the dataset is split into training and test sets (typically 70–80% for training, 20–30% for testing). The Random Forest model learns patterns by building multiple decision trees on random subsets of features and samples, which helps reduce overfitting and improves generalization.
 
-</details>
+- Each tree predicts the class independently, and the final prediction is made via majority voting across all trees in the forest. This ensemble approach ensures that individual tree errors are minimized.
+
+- Hyperparameters such as the number of trees, maximum tree depth, and minimum samples per leaf are tuned to balance accuracy and computation time.
+
+- Once trained, the model can predict the tipping direction for new scale configurations.
+
 
 ---
 
+![ML Prediction Screenshot](images/ml_prediction.png)
+
+---
+
+
 ## ⚙️ Stack Choices: Pandas vs Polars
 
-<details>
-  <summary><b>Click to expand Pandas vs Polars comparison</b></summary>
+This app supports **both Pandas and Polars** for data handling.
 
 | Feature                | **Pandas** | **Polars** |
 |------------------------|------------|------------|
 | Performance            | Great for small/medium datasets | Optimized for large datasets & parallel processing |
-| Memory Usage           | Higher     | Lower |
-| Syntax Compatibility   | Mature ecosystem | Similar to Pandas, growing rapidly |
-| File Handling          | Adequate   | Faster CSV/Parquet read-write |
+| Memory Usage           | Higher     | Lower (more efficient memory allocation. It allows lazy loading.) |
+| Syntax Compatibility   | Widely used, mature ecosystem | Similar to Pandas, growing rapidly |
+| File Handling          | Adequate   | Faster CSV/Parquet read-write for big files |
 | Multithreading         | Limited    | Built-in parallel execution |
 
 **Why Polars?**
 - Handles **large file sizes** efficiently.
-- **Lazy evaluation** optimizes queries.
+- Offers **significant speed improvements** for reading, filtering, and aggregations.
+- Uses **lazy evaluation** to optimize query execution.
 
 **When does it shift to Pandas?**
-- Non-UTF8 encodings.  
-- Inconsistent data schema.  
+- Polars only support UTF-8 encoding. In cased of other encodings, it shifts to Pandas.
+- Inconsistent data cannot be inferred by Polars using 'infer_schema_length'. Thus, shifts to Pandas.
 
-</details>
+
+In this app, for file loading:
+- **Default:** Polars (for speed & performance).
+- **Optional:** Switch to Pandas when needed.
+
+In this app, for data manipulation:
+- **Default:** Pandas (for simplicity & compatibility).
+- **Optional:** Switch to Polars for large datasets (e.g., >50MB) for faster performance.
+
+
+---
+
+
+## ⚙️ Tips to handle large files (Optimizations):
+
+- **Already Implemented:**
+
+	- Polars for Data Loading: Default data loader is Polars, which is faster and more memory-efficient than Pandas for large datasets.
+
+	- Fallback to Pandas: If Polars cannot read a file (e.g., complex Excel sheets), Pandas is used as a fallback.
+
+	- Lazy Loading for Display: Initially load and display only a limited number of rows (e.g., first 5).
+
+	- Sample-Based Profiling: For very large datasets, only a subset of rows is used for profiling to improve speed and reduce memory usage.
+
+	- Optimized Profiling: Heavy profiling computations (interactions, missing values, text profiling, certain correlations disabled) are now performed selectively.
+	
+
+- **Possible Additions:**
+	- Caching: Cache intermediate results (e.g., profiling summaries, model training subsets) to avoid redundant re-computation.	
+
+	- Chunked Processing: Load data in chunks to handle extremely large files without memory issues.
+
+	- Vectorized Operations: Use fully vectorized operations to speed up transformations and aggregations.
+
 
 ---
 
-## ⚙️ Tips to handle large files (Optimizations)
-
-<details>
-  <summary><b>Click to expand Optimizations</b></summary>
-
-**Already Implemented:**
-- Polars default for data loading.  
-- Fallback to Pandas if needed.  
-- Lazy Loading for Display (first 5 rows).  
-- Sample-Based Profiling (1000 rows).  
-- Selective profiling to reduce overhead.  
-
-**Possible Additions:**
-- Caching.  
-- Chunked processing.  
-- Vectorized operations.  
-
-</details>
-
----
 
 ## 🛠️ Tech Stack
-
-<details>
-  <summary><b>Click to expand Tech Stack</b></summary>
 
 | Technology        | Purpose |
 |-------------------|---------|
@@ -169,28 +190,27 @@ The app is organized into **multiple tabs**, each serving a specific function:
 | **scikit-learn**  | Machine Learning |
 | **ydata-profiling** | Automated profiling |
 
-</details>
 
 ---
 
-## 📚 References
 
-<details>
-  <summary><b>Click to expand References</b></summary>
+## References:
 
-- Random Forest articles:  
-  - https://www.blastanalytics.com/blog/comparing-propensity-modeling-techniques-to-predict-customer-behavior  
-  - https://swethadhanasekar.medium.com/random-forest-classifier-a-beginners-guide-c0b41713020  
+- Machine Learning Model: Random Forest --> Learning links: 
+		
+	- https://www.blastanalytics.com/blog/comparing-propensity-modeling-techniques-to-predict-customer-behavior
+	- https://swethadhanasekar.medium.com/random-forest-classifier-a-beginners-guide-c0b41713020
 
-- Dataset: https://www.openml.org/search?type=data&sort=runs&id=11&status=active  
+- Learning Random Forest Functions, Entropy, Gini Impurity using Microsoft Copilot
 
-- Used ChatGPT for UI & coding guidance.  
+- Machine Learning Dataset: https://www.openml.org/search?type=data&sort=runs&id=11&status=active
 
-</details>
+- Used CHATGPT for learning about the user-interface of streamlit and programming guide
+
 
 ---
 
-## 🌐 App Hosted
 
-App live 👉 [Streamlit Deployment](https://asifnoushad-datarefinerapptool.streamlit.app/)
+##App Hosted (URL):
 
+App hosted live in https://asifnoushad-datarefinerapptool.streamlit.app/
