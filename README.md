@@ -54,7 +54,7 @@ The app is organized into **multiple tabs**, each serving a specific function:
 		- Values below mean are negative; values above mean are positive.  
 		- Dividing by standard deviation makes std dev = 1.  
 
-- Apply row-based filtering: Keep rows based on conditions (e.g., value thresholds). (query() in Pandas / filter() in Polars)
+- Apply **row-based filtering**: Keep rows based on conditions (e.g., value thresholds). (query() in Pandas / filter() in Polars)
 
 ---
 
@@ -97,7 +97,7 @@ The app is organized into **multiple tabs**, each serving a specific function:
 - Dataset demonstrated is that of a 'balance scale measurements' obtained from OpenML. (filename: balance_scale_train.csv)
 - User can test batch data and download predictions csv. (filename: balance_scale_batch_test.csv)
 - User can enter custom inputs for instant predictions post training.
-- Tested for classification datasets. Regression model can be tested and implemented as 'Rain Forest' is capable of dealing with numerical classes as well. (extendable)
+- Tested for classification datasets. Regression model can be tested and implemented as 'Random Forest' is capable of dealing with numerical classes as well. (extendable)
 - Other Functions used: fit(), predict(), score()
 
 ---
@@ -167,7 +167,7 @@ This app supports **both Pandas and Polars** for data handling.
 
 **In this app:**
 - **File loading:** Default = Polars; fallback = Pandas.  
-- **Data manipulation:** Default = Pandas; optional = Polars for large datasets (>50MB).
+- **Data manipulation:** Default = Pandas;
 
 ---
 
@@ -181,5 +181,12 @@ This app supports **both Pandas and Polars** for data handling.
 	- Optimized Profiling  
 
 - **Possible Additions:**
-	- Caching intermediate results  
-	- Chunked Pro
+	- Caching intermediate results and profiles
+	- Adding RandomForestRegressor function for numerical prediction
+	- Providing options for 'AutoCleaning' pipelines to improve user experience
+	- Allow typecasting datetime as well
+
+## 🙏 Acknowledgments
+- Built with [Streamlit](https://streamlit.io/)  
+- Thanks to Hugging Face, OpenML for pre-trained models, dataset
+- Researched using CoPilot and ChatGPT for improving UI/UX 
