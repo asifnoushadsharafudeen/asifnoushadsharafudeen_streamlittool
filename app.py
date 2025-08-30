@@ -172,17 +172,38 @@ with tab3:
 ############Dropping NaNs
         #For removing Not a Number Values, Missing Values, Undefined Values etc
         if operation == "Drop NaNs":
-            st.subheader("Drop NaNs per Column")
+            st.subheader("Drop missing values (NaNs) per Column")
 
             # Polars: df.null_count(0) gives count of missing values per column
             #Pandas: df.isna().sum() gives count of missing values per column
             #nan_counts get the missing value count
             nan_counts = df.null_count().to_pandas() if isinstance(df, pl.DataFrame) else df.isna().sum()
+            #total_nans for overall missing values across dataframe
+            total_nans = nan_counts.sum().sum() if isinstance(nan_counts, pd.DataFrame) else nan_counts.sum()
+
             st.write("**Missing Values per Column**")
             #Creates an empty placeholder which can be filled with data and later updated
             missing_placeholder = st.empty()
             missing_placeholder.dataframe(nan_counts)
 
+            st.markdown("\n")
+
+            #Missing Rows Display - displays first 5 missing rows
+            st.write("Preview:")
+            preview_placeholder = st.empty()
+            if total_nans > 0:
+                if isinstance(df, pl.DataFrame):
+                    nan_preview = df.filter(
+                        pl.any_horizontal([pl.col(c).is_null() for c in df.columns])
+                    ).head(5).to_pandas()
+                else:
+                    nan_preview = df[df.isna().any(axis=1)].head(5)
+            
+                preview_placeholder.dataframe(nan_preview)
+                st.success(f"Preview of rows with missing values (showing up to 5 of {total_nans})")
+            else:
+                st.success("✅ No missing values left!")
+                
             st.markdown("--- \n")
             
             #Column based missing value removal. Here, column subsets are given and then removed accordingly.
@@ -203,11 +224,29 @@ with tab3:
 
                     # Refresh status immediately from existing df and update the placeholder
                     refreshed = df.null_count().to_pandas() if isinstance(df, pl.DataFrame) else df.isna().sum()
+                    total_nans = refreshed.sum().sum() if isinstance(refreshed, pd.DataFrame) else refreshed.sum()
                     missing_placeholder.dataframe(refreshed)
+
+                    # Refresh preview placeholder too
+                    if total_nans > 0:
+                        if isinstance(df, pl.DataFrame):
+                            nan_preview = df.filter(
+                                pl.any_horizontal([pl.col(c).is_null() for c in df.columns])
+                            ).head(5).to_pandas()
+                        else:
+                            nan_preview = df[df.isna().any(axis=1)].head(5)
+                        preview_placeholder.dataframe(nan_preview)
+                    else:
+                        preview_placeholder.empty()
+                        st.success("✅ No missing values left!")
                 else:
                     st.warning("Please select at least one column.")
 
-############Removing Duplicates
+                    
+                   
+                    
+                    
+############Removing Duplicates##############################################
 
         elif operation == "Remove Duplicates":
             st.subheader("Remove Duplicate Rows")
@@ -217,22 +256,36 @@ with tab3:
             total_duplicates = (
                 df.shape[0] - df.unique().shape[0] if isinstance(df, pl.DataFrame) else df.duplicated().sum()
             )
+
+            st.markdown("\n")
             #Creates an empty placeholder which can be filled with data and later updated
             dup_placeholder = st.empty()
             dup_placeholder.write(f"No. of duplicate rows: {total_duplicates}")
-            
-            #select columns to check for duplicates
-            cols_for_dup = st.multiselect(
-                "Select columns to check for duplicates. (leave it empty to remove the entire duplicate row.)",
-                options=df.columns
-            )
+
+            #Creates an empty placeholder for previewing duplicate rows
+            dup_preview_placeholder = st.empty()
+            if total_duplicates > 0:
+                if isinstance(df, pl.DataFrame):
+                    dup_preview = (
+                        df.filter(~df.is_unique())
+                        .head(5)
+                        .to_pandas()
+                    )
+                else:
+                    dup_preview = df[df.duplicated(keep=False)].head(5)
+                dup_preview_placeholder.dataframe(dup_preview)
+                st.success("Preview of duplicate rows.")
+            else:
+                st.success("✅ No duplicate rows found!")
+
             st.markdown("--- \n")
+
             #Apply to remove duplicates using df.unique and df.drop_duplicates
             if st.button("Apply Remove Duplicates"):
                 if isinstance(df, pl.DataFrame):
-                    df = df.unique(subset=cols_for_dup) if cols_for_dup else df.unique()
+                    df = df.unique()
                 else:
-                    df = df.drop_duplicates(subset=cols_for_dup if cols_for_dup else None)
+                    df = df.drop_duplicates()
                 
                 st.session_state["df_cleaned"] = df
                 st.success("Data updated ✅")
@@ -241,47 +294,104 @@ with tab3:
                 total_duplicates = (
                     df.shape[0] - df.unique().shape[0] if isinstance(df, pl.DataFrame) else df.duplicated().sum()
                 )
-                dup_placeholder.write(f"Total duplicate rows: {total_duplicates}")
+                dup_placeholder.write(f"No. of duplicate rows: {total_duplicates}")
+
+                # Refresh preview
+                if total_duplicates > 0:
+                    if isinstance(df, pl.DataFrame):
+                        dup_preview = (
+                            df.filter(~df.is_unique())
+                            .head(5)
+                            .to_pandas()
+                        )
+                    else:
+                        dup_preview = df[df.duplicated(keep=False)].head(5)
+                    dup_preview_placeholder.dataframe(dup_preview)
+                else:
+                    dup_preview_placeholder.empty()
+                    st.success("✅ No duplicate rows found!")
+
+
 
 ############Type Conversion############
 
         elif operation == "Type Conversion":
             st.subheader("Type Conversion")
             
-            #Shows drop down of the columns to convert type
             col_to_convert = st.selectbox("Select column to convert", options=df.columns)
             
-            # Show live dtypes (always from latest df)
-            st.write("**Current column data type:**", str(df[col_to_convert].dtype if isinstance(df, pl.DataFrame) else df[col_to_convert].dtype))
-            
+            # Determine current dtype
+            if isinstance(df, pl.DataFrame):
+                current_dtype = df[col_to_convert].dtype
+                is_string = current_dtype == pl.Utf8
+            else:  # Pandas
+                current_dtype = df[col_to_convert].dtype
+                is_string = current_dtype == object or current_dtype.name == "string"
+        
+            st.write("**Current column data type:**", str(current_dtype))
             st.markdown("--- \n")
             
             target_dtype = st.selectbox("Select target data type", ["int", "float", "string"])
-
             st.markdown("--- \n")
             
+            # Pre-warning for string → numeric
+            if is_string and target_dtype in ["int", "float"]:
+                st.warning(
+                    f"⚠️ Converting from {current_dtype} to {target_dtype} may fail for many values. "
+                    "If you click Apply, invalid values will become null (NaN)."
+                )
+            
+            try:
+                # Create preview
+                if isinstance(df, pl.DataFrame):
+                    preview_df = df.clone()
+                    if target_dtype == "int":
+                        preview_df = preview_df.with_columns(pl.col(col_to_convert).cast(pl.Int64, strict=False))
+                    elif target_dtype == "float":
+                        preview_df = preview_df.with_columns(pl.col(col_to_convert).cast(pl.Float64, strict=False))
+                    elif target_dtype == "string":
+                        preview_df = preview_df.with_columns(pl.col(col_to_convert).cast(pl.Utf8))
+        
+                    preview_pd = preview_df.head().to_pandas()
+                else:
+                    preview_df = df.copy()
+                    if target_dtype == "int":
+                        preview_df[col_to_convert] = pd.to_numeric(df[col_to_convert], errors="coerce").astype("Int64")
+                    elif target_dtype == "float":
+                        preview_df[col_to_convert] = pd.to_numeric(df[col_to_convert], errors="coerce")
+                    elif target_dtype == "string":
+                        preview_df[col_to_convert] = df[col_to_convert].astype(str)
+                    preview_pd = preview_df.head()
+                
+                # Show dtypes alongside
+                dtype_info = pd.DataFrame({
+                    "Column": [col_to_convert],
+                    "Original dtype": [str(current_dtype)],
+                    "New dtype": [str(preview_df[col_to_convert].dtype)]
+                })
+                st.write("**Column type info:**")
+                st.dataframe(dtype_info)
+                
+                st.markdown("--- \n")
+                st.write("**Preview:**")
+                st.dataframe(preview_pd)
+        
+            except Exception as e:
+                st.error(f"Failed to preview conversion: {e}")
+        
+            # Apply conversion
             if st.button("Apply Type Conversion"):
                 try:
-                    if isinstance(df, pl.DataFrame):
-                        if target_dtype == "int":
-                            df = df.with_columns(pl.col(col_to_convert).cast(pl.Int64))
-                        elif target_dtype == "float":
-                            df = df.with_columns(pl.col(col_to_convert).cast(pl.Float64))
-                        elif target_dtype == "string":
-                            df = df.with_columns(pl.col(col_to_convert).cast(pl.Utf8))
-                    else:
-                        if target_dtype == "int":
-                            df[col_to_convert] = pd.to_numeric(df[col_to_convert], errors="coerce").astype("Int64")
-                        elif target_dtype == "float":
-                            df[col_to_convert] = pd.to_numeric(df[col_to_convert], errors="coerce")
-                        elif target_dtype == "string":
-                            df[col_to_convert] = df[col_to_convert].astype(str)
-
-                    st.session_state["df_cleaned"] = df
+                    st.session_state["df_cleaned"] = preview_df
                     st.success("Data updated ✅")
-                    
                 except Exception as e:
                     st.error(f"Failed to convert column: {e}")
+
+
+
+
+
+
 
 #########Normalisation#############
 
@@ -679,7 +789,7 @@ with tab6:
         medians = st.session_state["ml_medians"]
         target_name = st.session_state.get("ml_target_name", "prediction")
 
-        # A) Batch prediction via file upload
+# A) Batch prediction via file upload
         with st.expander("Batch Prediction: Upload CSV/Excel with the same feature columns", expanded=True):
             pred_file = st.file_uploader("Upload PREDICTION data (CSV/Excel, must contain feature columns)", type=["csv", "xlsx", "xls"], key="ml_pred_upl")
             
@@ -693,38 +803,40 @@ with tab6:
                 except Exception as e:
                     st.error(f"Failed to read prediction file: {e}")
                     pred_df = None
-
-                #Enters if condition is file is uploaded and it is not empty
+        
                 if pred_df is not None and not pred_df.empty:
                     # Validate required columns
-                    #checks via list comprehension --> if the columns of uploaded batch file (pred_df.columns) match with columns in training file (feature_cols)
-                    #missing columns saved to missing_feats and error message is given
                     missing_feats = [c for c in feature_cols if c not in pred_df.columns]
                     
                     if missing_feats:
                         st.error(f"Prediction file is missing required feature columns: {missing_feats}")
                     else:
-                        #Copies the data to Xp and fills missing values with median to avoid error
+                        # Prepare features
                         Xp = pred_df[feature_cols].copy()
                         Xp = Xp.fillna(medians)  # same imputation as training
-
+        
                         try:
                             preds = clf.predict(Xp)
                             
-                            #proba gives probability of getting classes
-                            #proba = clf.predict_proba(Xp) if hasattr(clf, "predict_proba") else None
-                            
-                            #saves the input batch file copy to 'out'
+                            # Save input batch file copy to 'out'
                             out = pred_df.copy()
-                            
-                            #adds a column (target_name)_pred to out --> target_name is saved in training part
                             out[target_name + "_pred"] = preds
-                            
+        
+                            # If target column exists in batch file, add Correct column with tick/cross
+                            if target_name in pred_df.columns:
+                                out["Correct"] = out[target_name] == out[target_name + "_pred"]
+                                # Replace True/False with ✅/❌
+                                out["Correct"] = out["Correct"].apply(lambda x: "✅" if x else "❌")
         
                             #Shows preview of predictions --> 5 rows
                             st.write("Preview of predictions:")
                             st.dataframe(out.head(5))
-
+        
+                            # Display batch accuracy below preview (if target column exists)
+                            if target_name in pred_df.columns:
+                                batch_acc = (out["Correct"] == "✅").mean()
+                                st.success(f"Batch prediction accuracy: **{batch_acc*100:.2f}%**")
+        
                             # Download button to download csv
                             csv_bytes = out.to_csv(index=False).encode("utf-8")
                             st.download_button(
@@ -733,9 +845,11 @@ with tab6:
                                 file_name="predictions.csv",
                                 mime="text/csv",
                             )
-
+        
                         except Exception as e:
                             st.error(f"Prediction failed: {e}")
+
+
         
         st.markdown("--- \n")
         
