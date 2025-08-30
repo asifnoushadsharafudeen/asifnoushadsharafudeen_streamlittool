@@ -731,6 +731,67 @@ with tab6:
                     n_estimators = st.slider("Number of trees (n_estimators)", 50, 300, 100, 10)
                     max_depth = st.slider("Max depth (0 = None)", 0, 50, 0, 1)
                     random_state = st.number_input("Random state", value=42, step=1)
+                
+                    # ---- Hyperparameter Optimization ----
+                    with st.expander("Optimize Hyperparameters", expanded=False):
+                        st.info("Click the button below to find the best combination of n_estimators and max_depth for highest accuracy using cross-validation.")
+                        if st.button("Run Hyperparameter Optimization"):
+                            from sklearn.model_selection import GridSearchCV
+                
+                            # Split dataset for training/validation
+                            X_train_opt, X_val_opt, y_train_opt, y_val_opt = train_test_split(
+                                train_df[feature_cols].copy(),
+                                train_df[target_col].copy(),
+                                test_size=test_size,
+                                random_state=int(random_state),
+                                stratify=train_df[target_col] if train_df[target_col].nunique() > 1 else None
+                            )
+                
+                            # Handle missing values
+                            medians_opt = X_train_opt.median(numeric_only=True)
+                            X_train_opt = X_train_opt.fillna(medians_opt)
+                            X_val_opt = X_val_opt.fillna(medians_opt)
+                
+                            # Define parameter grid for GridSearchCV
+                            param_grid = {
+                                "n_estimators": [50, 100, 150, 200, 250, 300],
+                                "max_depth": [None, 10, 20, 30, 40, 50],
+                            }
+                
+                            # Initialize Random Forest classifier
+                            rf = RandomForestClassifier(random_state=int(random_state), n_jobs=-1)
+                
+                            # GridSearchCV with 3-fold cross-validation
+                            grid_search = GridSearchCV(
+                                estimator=rf,
+                                param_grid=param_grid,
+                                cv=5,  # 5-fold cross-validation
+                                scoring='accuracy',
+                                n_jobs=-1
+                            )
+                
+                            # Fit grid search
+                            grid_search.fit(X_train_opt, y_train_opt)
+                
+                            # Best parameters & accuracy
+                            best_params = grid_search.best_params_
+                            best_score = grid_search.best_score_
+                
+                            st.success(
+                                f"Best Hyperparameters Found ✅\n"
+                                f"- n_estimators: {best_params['n_estimators']}\n"
+                                f"- max_depth: {best_params['max_depth']}\n"
+                                f"\n Cross-validated Accuracy: {best_score*100:.2f}%"
+                            )
+                
+                            # Save best params in session state for later training
+                            st.session_state["best_params"] = best_params
+                
+                # ---- Adjust sliders to use optimized hyperparameters if available ----
+                if "best_params" in st.session_state:
+                    n_estimators = st.session_state["best_params"]["n_estimators"]
+                    max_depth = st.session_state["best_params"]["max_depth"]
+
 
                 #Train model ----
                 st.markdown("--- \n")
