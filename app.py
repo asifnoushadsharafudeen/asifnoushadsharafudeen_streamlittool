@@ -723,12 +723,12 @@ with tab6:
                 st.write("**Numeric X-Variables (features) auto-detected:**")
                 st.code(", ".join(feature_cols) if feature_cols else "None")
 
-                # ---- Basic settings entered by user----
+                # ---- Basic settings entered by user---- 
                 st.markdown("--- \n")
                 with st.expander("Training Settings", expanded=True):
                     test_size_percent = st.slider("Test size (%)", 1, 99, 20, 1)  # percentage in UI
                     test_size = test_size_percent / 100  # convert to fraction internally
-                    n_estimators = st.slider("Number of trees (n_estimators)", 50, 300, 100, 10)
+                    n_estimators = st.slider("Number of trees (n_estimators)", 50, 500, 100, 10)
                     max_depth = st.slider("Max depth (0 = None)", 0, 50, 0, 1)
                     random_state = st.number_input("Random state", value=42, step=1)
                 
@@ -754,18 +754,18 @@ with tab6:
                 
                             # Define parameter grid for GridSearchCV
                             param_grid = {
-                                "n_estimators": [50, 100, 150, 200, 250, 300],
+                                "n_estimators": [50, 100, 150, 200, 250, 300, 400, 500],
                                 "max_depth": [None, 10, 20, 30, 40, 50],
                             }
                 
                             # Initialize Random Forest classifier
                             rf = RandomForestClassifier(random_state=int(random_state), n_jobs=-1)
                 
-                            # GridSearchCV with 3-fold cross-validation
+                            # GridSearchCV with 5-fold cross-validation
                             grid_search = GridSearchCV(
                                 estimator=rf,
                                 param_grid=param_grid,
-                                cv=5,  # 5-fold cross-validation
+                                cv=5,
                                 scoring='accuracy',
                                 n_jobs=-1
                             )
@@ -791,8 +791,7 @@ with tab6:
                 if "best_params" in st.session_state:
                     n_estimators = st.session_state["best_params"]["n_estimators"]
                     max_depth = st.session_state["best_params"]["max_depth"]
-
-
+                    
                 #Train model ----
                 st.markdown("--- \n")
                 if st.button("Train Random Forest Classifier"):
@@ -819,9 +818,12 @@ with tab6:
                     )
 
                     # Random Forest Model: Assigning hyper parameters
+                    # ---- FIX: Safe max_depth handling to avoid TypeError ----
+                    max_depth_val = None if max_depth in [0, None] else int(max_depth)
+
                     clf = RandomForestClassifier(
                         n_estimators=int(n_estimators),
-                        max_depth=None if max_depth == 0 else int(max_depth),
+                        max_depth=max_depth_val,
                         random_state=int(random_state),
                         n_jobs=-1,
                     )
@@ -948,3 +950,4 @@ with tab6:
     else:
         with tab6:
             st.info("Please train a model to enable predictions.")
+
